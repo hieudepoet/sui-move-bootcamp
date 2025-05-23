@@ -5,10 +5,10 @@ import "@radix-ui/themes/styles.css";
 
 import { SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Theme } from "@radix-ui/themes";
 import App from "./App.tsx";
 import { networkConfig } from "./networkConfig.ts";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const queryClient = new QueryClient();
 
@@ -19,9 +19,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
           <WalletProvider autoConnect>
             <App />
+            <ReactQueryDevtools initialIsOpen={false} />
           </WalletProvider>
         </SuiClientProvider>
-        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </Theme>
   </React.StrictMode>,

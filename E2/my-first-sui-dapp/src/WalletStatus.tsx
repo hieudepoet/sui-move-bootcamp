@@ -1,7 +1,6 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Container, Flex, Heading, Text } from "@radix-ui/themes";
 import { OwnedObjects } from "./OwnedObjects";
-import { MintNFTButton } from "./MintNFTButton";
 
 export function WalletStatus() {
   const account = useCurrentAccount();
@@ -11,10 +10,9 @@ export function WalletStatus() {
       <Heading mb="2">Wallet Status</Heading>
 
       {account ? (
-        <Flex direction="column" gapY={"2"}>
+        <Flex direction="column">
           <Text>Wallet connected</Text>
           <Text>Address: {account.address}</Text>
-          <MintNFTButton />
         </Flex>
       ) : (
         <Text>Wallet not connected</Text>

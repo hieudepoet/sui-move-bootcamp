@@ -3,21 +3,25 @@ import { Flex, Heading, Text } from "@radix-ui/themes";
 
 export function OwnedObjects() {
   const account = useCurrentAccount();
+
   const { data, isPending, error } = useSuiClientQuery(
     "getOwnedObjects",
     {
       owner: account?.address as string,
       filter: {
-        StructType: "0x2eb076d9f07929c0db89564dbd2ea8fd08bb2cf8807dc4567c2f464e9cf8823e::hero::Hero",
-      }
+        StructType:
+          "0xc413c2e2c1ac0630f532941be972109eae5d6734e540f20109d75a59a1efea1e::hero::Hero",
+      },
     },
     {
       enabled: !!account,
+      refetchOnWindowFocus: false,
+      staleTime: 0,
     },
   );
 
   if (!account) {
-    return;
+    return null;
   }
 
   if (error) {
