@@ -1,5 +1,25 @@
 # Transaction, Object Limits and Table rebate
 
+## What You Will Learn
+
+In this section, you will learn how to work within Sui protocol limits when designing and implementing smart contracts. You will:
+
+- Understand key protocol limits such as maximum objects per transaction, object size, and dynamic field access.
+- Learn batching techniques to efficiently mint and manage large numbers of objects.
+- Replace vectors with Tables to overcome object size constraints and leverage dynamic fields.
+- Respect cache limits by structuring transactions appropriately.
+- Implement proper destruction logic to reclaim storage rebates when using Tables and dynamic fields.
+
+By the end, you will be able to design scalable Move modules that efficiently handle large collections of objects while respecting Sui's protocol constraints.
+
+## Project Structure
+
+This exercise centers around the `Armory` module, which manages a collection of `Sword` objects. The main logic is implemented in:
+- `armory.move`: Contains the `Armory` struct and functions for minting, storing, and destroying swords, as well as handling batching and storage rebates.
+- Accompanying test files: Validate your implementation against protocol limits and correct rebate handling.
+
+Each task builds on the previous, guiding you through practical solutions to real-world scalability and storage challenges in Sui Move.
+
 The exercise starts with an `Armory` module that uses a `vector` to store `Sword` objects.
 
 To see various protocol limits one can visit [snapshots directory in sui-protocol-config crate](https://github.com/MystenLabs/sui/blob/main/crates/sui-protocol-config/src/snapshots),
@@ -54,3 +74,7 @@ To properly handle storage rebates with a `Table`, you need to:
 
 After implementing `destroy_sword_entries` uncomment the 2nd typescript test and see it pass!
 
+## Useful Links
+
+- [Docs mention](https://docs.sui.io/concepts/transactions#limits-on-transactions-objects-and-data)
+- [sui-protocol-config crate snapshots](https://github.com/MystenLabs/sui/tree/main/crates/sui-protocol-config/src/snapshots)
