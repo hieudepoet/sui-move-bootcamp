@@ -17,7 +17,7 @@ module package_upgrade::my_module {
     fun init(ctx: &mut TxContext) {
         transfer::share_object(SharedBalancePool {
             id: object::new(ctx),
-            balance: balance::empty(),
+            balance: balance::zero(),
             version: 1
         });
     }
@@ -38,6 +38,8 @@ module package_upgrade::same_my_module {
     use sui::balance::Balance;
     use sui::coin::Coin;
     use sui::sui::SUI;
+
+    const EInvalidVersion: u64 = 0;
 
     const VERSION: u16 = 2;
 
