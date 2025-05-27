@@ -1,5 +1,7 @@
 module package_upgrade::version;
 
+use sui::package::Publisher;
+
 /// Shared object with `version` which updates on every upgrade.
 /// Used as input to force the end-user to use the latest contract version.
 public struct Version has key {
@@ -22,7 +24,8 @@ public fun check_is_valid(self: &Version) {
 
 /// After upgrade, `migrate` function bumbs the `Version`'s object version, to
 /// match the latest `VERSION` constant.
-public fun migrate(self: &mut Version) {
+public fun migrate(self: &mut Version, pub: &Publisher) {
+    pub.from_package<Version>();
     self.version = VERSION;
 }
 
