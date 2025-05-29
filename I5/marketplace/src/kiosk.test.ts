@@ -11,19 +11,14 @@ describe("Kiosk operations", () => {
     const buyer = BUYER_KEYPAIR;
 
     beforeAll(async () => {
-        console.log("Before all");
         client = new SuiClient({ url: getFullnodeUrl('localnet') });
-        console.log("before publish");
         await PublishSingleton.publish({client, signer: admin});
-        console.log("before createKiosk");
         await createPersonalKiosk(client, buyer);
         await createKiosk(client, admin);
-        console.log("after createKiosk");
     }, 20000);
 
 
     it("Lists and purchases from Kiosk", async () => {
-        console.log("Before create sword");
         const swordResp = await createSword({
             client,
             signer: admin,
@@ -48,7 +43,6 @@ describe("Kiosk operations", () => {
         if (listingResp.effects?.status.status !== 'success') {
             throw new Error(`Something went wrong listing sword:\n${JSON.stringify(listingResp, null, 2)}`)
         }
-        console.log("after place and list");
 
         const kioskChange = listingResp.objectChanges?.find((chng): chng is SuiObjectChangeMutated => {
             return chng.type === 'mutated' && chng.objectType === '0x2::kiosk::Kiosk';
