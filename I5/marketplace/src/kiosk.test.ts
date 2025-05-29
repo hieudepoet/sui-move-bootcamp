@@ -1,6 +1,6 @@
 import { SuiClient, SuiObjectChangeMutated, getFullnodeUrl } from "@mysten/sui/client";
 import { PublishSingleton } from "./publish";
-import { createKiosk, placeAndListInKiosk, purchase } from "./kiosk";
+import { createKiosk, createPersonalKiosk, placeAndListInKiosk, purchase } from "./kiosk";
 import { ADMIN_KEYPAIR, BUYER_KEYPAIR } from "./consts";
 import { createSword } from "./create-sword";
 
@@ -11,13 +11,19 @@ describe("Kiosk operations", () => {
     const buyer = BUYER_KEYPAIR;
 
     beforeAll(async () => {
+        console.log("Before all");
         client = new SuiClient({ url: getFullnodeUrl('localnet') });
+        console.log("before publish");
         await PublishSingleton.publish({client, signer: admin});
+        console.log("before createKiosk");
+        await createPersonalKiosk(client, buyer);
         await createKiosk(client, admin);
-    }, 10000);
+        console.log("after createKiosk");
+    }, 20000);
 
 
     it("Lists and purchases from Kiosk", async () => {
+        console.log("Before create sword");
         const swordResp = await createSword({
             client,
             signer: admin,
@@ -42,6 +48,7 @@ describe("Kiosk operations", () => {
         if (listingResp.effects?.status.status !== 'success') {
             throw new Error(`Something went wrong listing sword:\n${JSON.stringify(listingResp, null, 2)}`)
         }
+        console.log("after place and list");
 
         const kioskChange = listingResp.objectChanges?.find((chng): chng is SuiObjectChangeMutated => {
             return chng.type === 'mutated' && chng.objectType === '0x2::kiosk::Kiosk';
@@ -59,5 +66,5 @@ describe("Kiosk operations", () => {
         if (purchaseResp.effects?.status.status !== 'success') {
             throw new Error(`Something went wrong purchasing sword:\n${JSON.stringify(purchaseResp, null, 2)}`)
         }
-    }, 10000);
+    }, 20000);
 });
