@@ -12,7 +12,7 @@ describe("Kiosk operations", () => {
 
     beforeAll(async () => {
         client = new SuiClient({ url: getFullnodeUrl('localnet') });
-        await PublishSingleton.publish(client, admin);
+        await PublishSingleton.publish({client, signer: admin});
         await createKiosk(client, admin);
     }, 10000);
 
@@ -55,7 +55,6 @@ describe("Kiosk operations", () => {
             signer: buyer,
             fromKioskObjectId: kioskChange.objectId,
             swordId,
-            price: 5000
         });
         if (purchaseResp.effects?.status.status !== 'success') {
             throw new Error(`Something went wrong purchasing sword:\n${JSON.stringify(purchaseResp, null, 2)}`)

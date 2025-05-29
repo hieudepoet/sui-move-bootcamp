@@ -163,7 +163,7 @@ async function publishPackage(client: SuiClient, signer: Keypair, packagePath: s
     return resp;
 }
 
-async function createPolicy({ client, signer, packageId, publisherChng }: {
+async function createPolicy({ client, signer, packageId, rulesPackageId, publisherChng, royalties }: {
     client: SuiClient,
     signer: Keypair,
     packageId: string,
@@ -174,22 +174,46 @@ async function createPolicy({ client, signer, packageId, publisherChng }: {
         minRoyaltiesAmount: string;
     }
 }): Promise<SuiTransactionBlockResponse> {
-    const transaction = new Transaction();
+    const ptb = new Transaction();
 
-    const [policy, cap] = transaction.moveCall({
+    const [policy, cap] = ptb.moveCall({
         target: "0x2::transfer_policy::new",
-        arguments: [transaction.objectRef(publisherChng)],
+        arguments: [ptb.objectRef(publisherChng)],
         typeArguments: [`${packageId}::sword::Sword`],
     });
 
-    // Task: Set transfer policy with:
-    // 1. Personal kiosk rule
-    // 2. Royalty rule
-    // 3. Lock rule
+    ptb.moveCall({
+        target: `${rulesPackageId}::kiosk_lock_rule::add`,
+        arguments: [
+            policy,
+            cap
+        ],
+        typeArguments: [`${packageId}::sword::Sword`],
+    });
 
-    transaction.transferObjects([cap], signer.toSuiAddress());
+    ptb.moveCall({
+        target: `${rulesPackageId}::personal_kiosk_rule::add`,
+        arguments: [
+            policy,
+            cap
+        ],
+        typeArguments: [`${packageId}::sword::Sword`],
+    });
 
-    transaction.moveCall({
+    ptb.moveCall({
+        target: `${rulesPackageId}::royalty_rule::add`,
+        arguments: [
+            policy,
+            cap,
+            ptb.pure.u16(royalties.basisPoints),
+            ptb.pure.u64(royalties.minRoyaltiesAmount),
+        ],
+        typeArguments: [`${packageId}::sword::Sword`],
+    });
+    
+    ptb.transferObjects([cap], signer.toSuiAddress());
+
+    ptb.moveCall({
         target: "0x2::transfer::public_share_object",
         arguments: [policy],
         typeArguments: [
@@ -198,7 +222,7 @@ async function createPolicy({ client, signer, packageId, publisherChng }: {
     });
 
     const resp = await client.signAndExecuteTransaction({
-        transaction,
+        transaction: ptb,
         signer,
         options: {
             showObjectChanges: true,
