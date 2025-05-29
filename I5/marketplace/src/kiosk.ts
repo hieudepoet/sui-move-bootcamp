@@ -96,7 +96,7 @@ export async function createPersonalKiosk(client: SuiClient, signer: Keypair): P
     // Task: Make `kiosk` personal.
     const [pcap] = transaction.moveCall({
         target: `${PublishSingleton.rulesPackageId()}::personal_kiosk::new`,
-        arguments: [kiosk, cap]
+        arguments: [ kiosk, cap ]
     });
 
     transaction.moveCall({
@@ -232,7 +232,7 @@ export async function purchase({ client, signer, fromKioskObjectId, swordId }: {
 
     const transaction = new Transaction();
 
-    const [payment, royaltiesPayment] = transaction.splitCoins(transaction.gas, [price.toString(), royaltiesAmount]);
+    const [payment, royaltiesPayment] = transaction.splitCoins(transaction.gas, [price.toString(), royaltiesAmount.toString()]);
     const [sword, request] = transaction.moveCall({
         target: '0x2::kiosk::purchase',
         arguments: [
@@ -249,17 +249,17 @@ export async function purchase({ client, signer, fromKioskObjectId, swordId }: {
     // 3. Paying royalties (royalty_rule)
 
     // Lock the sword in our personal kiosk
-    const personalCapArg = transaction.object(buyerKiosk.capId);
-    const [cap, potato] = transaction.moveCall({
+    const pcap = transaction.object(buyerKiosk.capId);
+    const [cap, borrow] = transaction.moveCall({
         target: `${PublishSingleton.rulesPackageId()}::personal_kiosk::borrow_val`,
-        arguments: [personalCapArg]
+        arguments: [pcap]
     });
 
-    const buyerKioskArg = transaction.object(buyerKiosk.id);
+    const kiosk = transaction.object(buyerKiosk.id);
     transaction.moveCall({
         target: '0x2::kiosk::lock',
         arguments: [
-            buyerKioskArg,
+            kiosk,
             cap,
             transaction.object(PublishSingleton.policyId()),
             sword
@@ -270,9 +270,9 @@ export async function purchase({ client, signer, fromKioskObjectId, swordId }: {
     transaction.moveCall({
         target: `${PublishSingleton.rulesPackageId()}::personal_kiosk::return_val`,
         arguments: [
-            personalCapArg,
+            pcap,
             cap,
-            potato
+            borrow
         ],
     });
 
@@ -281,7 +281,7 @@ export async function purchase({ client, signer, fromKioskObjectId, swordId }: {
         target: `${PublishSingleton.rulesPackageId()}::kiosk_lock_rule::prove`,
         arguments: [
             request,
-            buyerKioskArg,
+            kiosk,
         ],
         typeArguments: [`${PublishSingleton.packageId()}::sword::Sword`]
     });
@@ -290,7 +290,7 @@ export async function purchase({ client, signer, fromKioskObjectId, swordId }: {
     transaction.moveCall({
         target: `${PublishSingleton.rulesPackageId()}::personal_kiosk_rule::prove`,
         arguments: [
-            buyerKioskArg,
+            kiosk,
             request
         ],
         typeArguments: [`${PublishSingleton.packageId()}::sword::Sword`]
