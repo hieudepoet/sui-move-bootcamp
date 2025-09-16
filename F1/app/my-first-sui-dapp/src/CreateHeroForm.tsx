@@ -26,6 +26,23 @@ export const CreateHeroForm = () => {
     // TODO: * mint a weapon
     // TODO: * equip the weapon to the hero
     // TODO: * transfer the hero to the current wallet's address
+    const hero = tx.moveCall({
+      target: `${import.meta.env.VITE_PACKAGE_ID}::hero::new_hero`,
+      arguments: [
+        tx.pure.string("My Hero"),
+        tx.pure.u64(100),
+        tx.object(import.meta.env.VITE_HEROES_REGISTRY_ID),
+      ],
+    });
+    const weapon = tx.moveCall({
+      target: `${import.meta.env.VITE_PACKAGE_ID}::hero::new_weapon`,
+      arguments: [tx.pure.string("My Weapon"), tx.pure.u64(1000)],
+    });
+    tx.moveCall({
+      target: `${import.meta.env.VITE_PACKAGE_ID}::hero::equip_weapon`,
+      arguments: [hero, weapon],
+    });
+    tx.transferObjects([hero], account.address);
 
     await signAndExecuteTransaction({
       transaction: tx,
