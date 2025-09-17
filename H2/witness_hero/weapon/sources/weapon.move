@@ -1,5 +1,4 @@
 module weapon::weapon;
-
 use std::ascii::String;
 use std::type_name;
 use sui::package::{Self, Publisher};
@@ -37,9 +36,10 @@ public fun mint_weapon<W: drop>(
     allow_list: &AllowList,
     ctx: &mut TxContext,
 ): Weapon {
-    let caller_witness = type_name::get_with_original_ids<W>().into_string();
+    let caller_witness = type_name::with_original_ids<W>().into_string();
     assert!(
-        allow_list.witness_types.contains(caller_witness) && *allow_list.witness_types.borrow(caller_witness),
+        allow_list.witness_types.contains(caller_witness) &&
+        *allow_list.witness_types.borrow(caller_witness),
         EInvalidCaller,
     );
 
@@ -55,7 +55,7 @@ public fun name(weapon: &Weapon): String {
 
 entry fun whitelist_witness<T>(p: &Publisher, allow_list: &mut AllowList) {
     assert!(p.from_module<WEAPON>(), EInvalidPublisher);
-    let witness_type = type_name::get_with_original_ids<T>().into_string();
+    let witness_type = type_name::with_original_ids<T>().into_string();
     let (already_exists, already_whitelisted) = contains_and_is_whitelisted(
         witness_type,
         allow_list,
@@ -71,7 +71,7 @@ entry fun whitelist_witness<T>(p: &Publisher, allow_list: &mut AllowList) {
 
 entry fun blacklist_witness<T>(p: &Publisher, allow_list: &mut AllowList) {
     assert!(p.from_module<WEAPON>(), EInvalidPublisher);
-    let witness_type = type_name::get_with_original_ids<T>().into_string();
+    let witness_type = type_name::with_original_ids<T>().into_string();
     let (already_exists, already_whitelisted) = contains_and_is_whitelisted(
         witness_type,
         allow_list,
