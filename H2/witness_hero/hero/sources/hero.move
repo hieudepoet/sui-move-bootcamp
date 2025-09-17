@@ -1,5 +1,4 @@
 module hero::hero;
-
 use std::string::String;
 use sui::balance::{Self, Balance};
 use sui::coin::{Self, Coin};
@@ -107,7 +106,9 @@ use weapon::weapon::{Weapon, EInvalidCaller};
 #[test_only]
 use sui::package::Publisher;
 #[test_only]
-use sui::{test_scenario as ts, test_utils::assert_eq};
+use sui::{test_scenario as ts};
+#[test_only]
+use std::unit_test::assert_eq;
 
 #[test_only]
 const HERO_ADMIN: address = @0xAA;
@@ -218,7 +219,7 @@ fun test_attach_weapon_succeeds_for_whitelisted_witness() {
     {
         let hero = ts.take_from_sender<Hero>();
         let weapon = dof::borrow<String, Weapon>(&hero.id, b"Weapon".to_string());
-        assert_eq(weapon.name().to_string(), b"Weapon".to_string());
+        assert_eq!(weapon.name().to_string(), b"Weapon".to_string());
         ts.return_to_sender(hero);
     };
 
