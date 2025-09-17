@@ -40,7 +40,9 @@ module publisher::hero {
     // ===== TEST ONLY =====
 
     #[test_only]
-    use sui::{test_scenario as ts, test_utils::{assert_eq, destroy}};
+    use sui::{test_scenario as ts, test_utils::{destroy}};
+    #[test_only]
+    use std::unit_test::assert_eq;
 
     #[test_only]
     const ADMIN: address = @0xAA;
@@ -51,14 +53,14 @@ module publisher::hero {
     fun test_publisher_address_gets_publihser_object() {
         let mut ts = ts::begin(ADMIN);
 
-        assert_eq(ts::has_most_recent_for_address<Publisher>(ADMIN), false);
+        assert_eq!(ts::has_most_recent_for_address<Publisher>(ADMIN), false);
 
         init(HERO {}, ts.ctx());
 
         ts.next_tx(ADMIN);
 
         let publisher = ts.take_from_sender<Publisher>();
-        assert_eq(publisher.from_module<HERO>(), true);
+        assert_eq!(publisher.from_module<HERO>(), true);
         ts.return_to_sender(publisher);
 
         ts.end();
@@ -76,7 +78,7 @@ module publisher::hero {
 
         let hero = create_hero(&publisher, b"Hero 1".to_string(), ts.ctx());
 
-        assert_eq(hero.name, b"Hero 1".to_string());
+        assert_eq!(hero.name, b"Hero 1".to_string());
 
         ts.return_to_sender(publisher);
 
@@ -93,7 +95,7 @@ module publisher::hero {
 
         ts.next_tx(ADMIN);
 
-        assert_eq(ts::has_most_recent_for_address<Hero>(USER), false);
+        assert_eq!(ts::has_most_recent_for_address<Hero>(USER), false);
 
         let publisher = ts.take_from_sender<Publisher>();
 
@@ -102,7 +104,7 @@ module publisher::hero {
 
         ts.next_tx(ADMIN);
 
-        assert_eq(ts::has_most_recent_for_address<Hero>(USER), true);
+        assert_eq!(ts::has_most_recent_for_address<Hero>(USER), true);
 
         ts.return_to_sender(publisher);
 
@@ -115,7 +117,8 @@ module publisher::hero_test {
     use publisher::hero;
     use sui::package::{Self, Publisher};
     use sui::test_scenario as ts;
-    use sui::test_utils::assert_eq;
+    #[test_only]
+    use std::unit_test::assert_eq;
 
     const ADMIN: address = @0xAA;
 
@@ -129,7 +132,7 @@ module publisher::hero_test {
     fun test_publisher_cannot_mint_hero_with_wrong_publisher_object() {
         let mut ts = ts::begin(ADMIN);
 
-        assert_eq(ts::has_most_recent_for_address<Publisher>(ADMIN), false);
+        assert_eq!(ts::has_most_recent_for_address<Publisher>(ADMIN), false);
 
         init(HERO_TEST {}, ts.ctx());
 
