@@ -5,10 +5,12 @@
 /// - Objects & drop: contrast an object that must be explicitly deleted
 ///   with a plain value type that can be ignored/overwritten if it has drop
 
-module basic_move::basic_move_suggested_change_solution;
+module basic_move::basic_move;
 use std::string::String;
-use sui::test_scenario;
+#[test_only]
 use sui::test_utils::destroy;
+#[test_only]
+use sui::test_scenario;
 
 public struct Hero has key, store {
     id: object::UID,
