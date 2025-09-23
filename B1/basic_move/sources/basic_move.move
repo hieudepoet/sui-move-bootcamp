@@ -18,25 +18,25 @@ public struct Hero has key, store {
 }
 
 // Value type WITH drop → can be ignored/overwritten.
-public struct Pebble has drop, store {
-    size: u8,
+public struct InsignificantWeapon has drop, store {
+    power: u8,
 }
 
 // Value type WITHOUT drop → cannot be ignored/overwritten.
-public struct Rock has store {
-    size: u8,
+public struct Weapon has store {
+    power: u8,
 }
 
 public fun mint_hero(name: String, ctx: &mut TxContext): Hero {
     Hero { id: object::new(ctx), name }
 }
 
-public fun make_pebble(size: u8): Pebble {
-    Pebble { size } // You can also create and return the created struct in one line
+public fun create_insignificant_weapon(power: u8): InsignificantWeapon {
+    InsignificantWeapon { power }
 }
 
-public fun make_rock(size: u8): Rock {
-    Rock { size }
+public fun create_weapon(power: u8): Weapon {
+    Weapon { power }
 }
 
 #[test]
@@ -52,18 +52,18 @@ fun test_mint() {
 #[test]
 fun test_drop_semantics() {
     // 1) Ignoring a value requires `drop`
-    let _pebble = make_pebble(
+    let _insignificant_weapon = create_insignificant_weapon(
         1,
-    ); // OK: Pebble has `drop` → Show linter error when drop ability is removed
+    ); // OK: InsignificantWeapon has `drop` → Show compiler error when drop ability is removed
 
     // 2) Overwriting a variable drops the old value → requires `drop`
-    let mut _pebble2 = make_pebble(2);
-    _pebble2 = make_pebble(3); // OK: Pebble has `drop`
+    let mut _insignificant_weapon2 = create_insignificant_weapon(2);
+    _insignificant_weapon2 = create_insignificant_weapon(3); // OK: InsignificantWeapon has `drop`
 
     // 3) A type WITHOUT drop cannot be ignored/overwritten implicitly.
     // Correct way: explicitly CONSUME it (e.g., in this test via destroy)
-    let rock = make_rock(4);
-    destroy(rock); // Consumes Rock → Comment this line out to see the linter error message
+    let weapon = create_weapon(4);
+    destroy(weapon); // Consumes Weapon → Comment this line out to see the compiler error message
 }
 
 #[test_only]
