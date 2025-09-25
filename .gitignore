@@ -1,2 +1,5 @@
 .history
 build
+node_modules/
+target/
+build/
