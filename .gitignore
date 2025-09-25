@@ -1,4 +1,7 @@
 .history
+.idea
+.env
+.lock
 build/
 node_modules/
 target/
