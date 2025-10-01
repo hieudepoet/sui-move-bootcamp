@@ -7,6 +7,8 @@ const envSchema = z.object({
   SUI_NETWORK: z.string(),
   PACKAGE_ID: z.string().startsWith("0x"),
   POLICY_ID: z.string().startsWith("0x"),
+  DISPLAY_PACKAGE_ID: z.string().startsWith("0x"),
+  PUBLISHER_ID: z.string().startsWith("0x"),
 });
 
 // Parse and validate the environment variables

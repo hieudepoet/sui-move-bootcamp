@@ -4,7 +4,7 @@ import { Transaction } from "@mysten/sui/transactions";
 import { ENV } from "../env";
 import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 
-test("Simple JSON RPC CLient Limits - Testnet", async () => {
+test("Level Up - Devnet", async () => {
   const keypair = new Ed25519Keypair();
   console.log("My address:", keypair.getPublicKey().toSuiAddress());
 
