@@ -1,6 +1,6 @@
 module package_upgrade::version;
 
-use sui::package::{Publisher};
+use sui::package::Publisher;
 
 /// Shared object with `version` which updates on every upgrade.
 /// Used as input to force the end-user to use the latest contract version.
