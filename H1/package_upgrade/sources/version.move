@@ -10,7 +10,7 @@ public struct Version has key {
 const EInvalidPackageVersion: u64 = 0;
 
 // Task: Update version to 2
-const VERSION: u64 = 1;
+const VERSION: u64 = 2;
 
 fun init(ctx: &mut TxContext) {
     transfer::share_object(Version { id: object::new(ctx), version: VERSION })
@@ -19,6 +19,10 @@ fun init(ctx: &mut TxContext) {
 /// Function checking that the package-version matches the `Version` object.
 public fun check_is_valid(self: &Version) {
     assert!(self.version == VERSION, EInvalidPackageVersion);
+}
+
+public fun migrate(self: &mut Version) {
+    self.version = VERSION;
 }
 
 #[test_only]

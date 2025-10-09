@@ -6,20 +6,31 @@ use sui::dynamic_field as df;
 use sui::dynamic_object_field as dof;
 use sui::package;
 
+use sui::coin::{Coin};
+use sui::sui::SUI;
+
 use package_upgrade::blacksmith::{Shield, Sword};
 use package_upgrade::version::Version;
 
+const HERO_PRICE: u64 = 100;
+const PAYMENT_RECEIVER: address = @0x1;
+
 const EAlreadyEquipedShield: u64 = 0;
 const EAlreadyEquipedSword: u64 = 1;
+const EInvalidPrice: u64 = 2;
 
 public struct HERO() has drop;
+
+// sword, shield, power
+public struct SwordKey has copy, drop, store {}
+public struct ShieldKey has copy, drop, store {}
+public struct PowerKey has copy, drop, store {}
 
 /// Hero NFT
 public struct Hero has key, store {
     id: UID,
     health: u64,
-    stamina: u64,
-    // Task: Add power field
+    stamina: u64
 }
 
 fun init(otw: HERO, ctx: &mut TxContext) {
@@ -38,31 +49,50 @@ public fun mint_hero(version: &Version, ctx: &mut TxContext): Hero {
 }
 
 // Task: Implement mint_hero_v2 that accepts payment
-// public fun mint_hero_v2(version: &Version, payment: Coin<SUI>, ctx: &mut TxContext): Hero {
-// }
+public fun mint_hero_v2(version: &Version, payment: Coin<SUI>, ctx: &mut TxContext): Hero {
+    let mut hero = Hero {
+        id: object::new(ctx),
+        health: 0,
+        stamina: 0
+    };
+
+    assert!(payment.value() == HERO_PRICE, EInvalidPrice);
+    transfer::public_transfer(payment, PAYMENT_RECEIVER);
+
+    df::add(&mut hero.id, PowerKey{}, 0);
+
+    hero
+}
 
 /// Hero can equip a single sword.
 /// Equiping a sword increases the `Hero`'s power by its attack.
 public fun equip_sword(self: &mut Hero, version: &Version, sword: Sword) {
     version.check_is_valid();
-    // Task: Use SwordKey instead of string
-    if (df::exists_(&self.id, b"sword".to_string())) {
-        abort(EAlreadyEquipedSword)
+    
+    if (dof::exists_(&self.id, SwordKey{})) {
+        abort(EAlreadyEquipedSword);
     };
-    // Task: Update power
-    self.add_dof(b"sword".to_string(), sword)
+
+    let mut hero_power = *df::borrow_mut(&mut self.id, PowerKey{});
+    hero_power = hero_power + sword.attack();
+
+    dof::add(&mut self.id, SwordKey{}, sword);
+
 }
 
 /// Hero can equip a single shield.
 /// Equiping a shield increases the `Hero`'s power by its defence.
 public fun equip_shield(self: &mut Hero, version: &Version, shield: Shield) {
     version.check_is_valid();
-    // Task: Use ShieldKey instead of string
-    if (df::exists_(&self.id, b"shield".to_string())) {
-        abort(EAlreadyEquipedShield)
+
+    if(dof::exists_(&self.id, ShieldKey{})) {
+        abort(EAlreadyEquipedShield);
     };
-    // Task: Update power
-    self.add_dof(b"shield".to_string(), shield)
+
+    let mut hero_power = *df::borrow_mut(&mut self.id, PowerKey{});
+    hero_power = hero_power + shield.defence();
+
+    dof::add(&mut self.id, ShieldKey{}, shield);
 }
 
 public fun health(self: &Hero): u64 {
@@ -74,22 +104,22 @@ public fun stamina(self: &Hero): u64 {
 }
 
 // Task: Add power getter
-// public fun power(self: &Hero): u64 {
-//     0
-// }
+public fun power(self: &Hero): u64 {
+    *df::borrow(&self.id, PowerKey{})
+}
 
 /// Returns the sword the hero has equipped.
 /// Aborts if it does not exists
 public fun sword(self: &Hero): &Sword {
     // Task: Use SwordKey instead of string
-    dof::borrow(&self.id, b"sword")
+    dof::borrow(&self.id, SwordKey{})
 }
 
 /// Returns the shield the hero has equipped.
 /// Aborts if it does not exists
 public fun shield(self: &Hero): &Shield {
     // Task: Use ShieldKey instead of string
-    dof::borrow(&self.id, b"shield")
+    dof::borrow(&self.id, ShieldKey{})
 }
 
 /// Generic add dynamic object field to the hero.
