@@ -59,6 +59,7 @@ public fun mint_hero_v2(version: &Version, payment: Coin<SUI>, ctx: &mut TxConte
     assert!(payment.value() == HERO_PRICE, EInvalidPrice);
     transfer::public_transfer(payment, PAYMENT_RECEIVER);
 
+    // Power IS a DYNAMIC FIELD (DF), not DYNAMIC OBJECT FIELD(DOF), because its value is a u64, not an Object.
     df::add(&mut hero.id, PowerKey{}, 0);
 
     hero
@@ -73,6 +74,7 @@ public fun equip_sword(self: &mut Hero, version: &Version, sword: Sword) {
         abort(EAlreadyEquipedSword);
     };
 
+    // The borrow and borrow_mut return &ref(REFERENCE &), to access the value, use the asterisk(*)
     let mut hero_power = *df::borrow_mut(&mut self.id, PowerKey{});
     hero_power = hero_power + sword.attack();
 
