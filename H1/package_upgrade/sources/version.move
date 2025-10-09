@@ -1,5 +1,7 @@
 module package_upgrade::version;
 
+use sui::package::{Publisher};
+
 /// Shared object with `version` which updates on every upgrade.
 /// Used as input to force the end-user to use the latest contract version.
 public struct Version has key {
@@ -8,6 +10,7 @@ public struct Version has key {
 }
 
 const EInvalidPackageVersion: u64 = 0;
+const EInvalidPublisher: u64 = 1;
 
 // Task: Update version to 2
 const VERSION: u64 = 2;

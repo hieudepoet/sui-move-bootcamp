@@ -12,12 +12,13 @@ use sui::sui::SUI;
 use package_upgrade::blacksmith::{Shield, Sword};
 use package_upgrade::version::Version;
 
-const HERO_PRICE: u64 = 100;
+const HERO_PRICE: u64 = 5_000_000_000;
 const PAYMENT_RECEIVER: address = @0x1;
 
 const EAlreadyEquipedShield: u64 = 0;
 const EAlreadyEquipedSword: u64 = 1;
 const EInvalidPrice: u64 = 2;
+const EUseMintHeroV2Instead: u64 = 3;
 
 public struct HERO() has drop;
 
@@ -39,17 +40,13 @@ fun init(otw: HERO, ctx: &mut TxContext) {
 
 /// @deprecated: `mint_hero` is deprecated. Use `mint_hero_v2` instead.
 public fun mint_hero(version: &Version, ctx: &mut TxContext): Hero {
-    version.check_is_valid();
-    Hero {
-        id: object::new(ctx),
-        health: 100,
-        stamina: 10
-    }
+    abort(EUseMintHeroV2Instead)
 }
 
 /// Anyone can mint a hero, as long as they pay `HERO_PRICE` SUI.
 /// New hero will have 100 health and 10 stamina.
 public fun mint_hero_v2(version: &Version, payment: Coin<SUI>, ctx: &mut TxContext): Hero {
+    version.check_is_valid();
     let mut hero = Hero {
         id: object::new(ctx),
         health: 100,
@@ -76,8 +73,8 @@ public fun equip_sword(self: &mut Hero, version: &Version, sword: Sword) {
     // or assert!(dof::exists_(&self.id, SwordKey{}), EAlreadyEquipedSword)
 
     // The borrow and borrow_mut return &ref(REFERENCE &), to access the value, use the asterisk(*)
-    let mut hero_power = *df::borrow_mut(&mut self.id, PowerKey{});
-    hero_power = hero_power + sword.attack();
+    let mut hero_power = df::borrow_mut(&mut self.id, PowerKey{});
+    *hero_power = *hero_power + sword.attack();
 
     dof::add(&mut self.id, SwordKey{}, sword);
 
@@ -93,8 +90,8 @@ public fun equip_shield(self: &mut Hero, version: &Version, shield: Shield) {
     };
     // or assert!(dof::exists_(&self.id, ShieldKey{}), EAlreadyEquipedShield)
 
-    let mut hero_power = *df::borrow_mut(&mut self.id, PowerKey{});
-    hero_power = hero_power + shield.defence();
+    let mut hero_power = df::borrow_mut(&mut self.id, PowerKey{});
+    *hero_power = *hero_power + shield.defence();
 
     dof::add(&mut self.id, ShieldKey{}, shield);
 }
