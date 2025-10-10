@@ -8,6 +8,13 @@ test("Level Up - Devnet", async () => {
   const keypair = new Ed25519Keypair();
   console.log("My address:", keypair.getPublicKey().toSuiAddress());
 
+  /** 
+   * @DEV IF FAUCET DOESN'T WORK:
+   * - Declare .env variable SECRET_KEY
+   * - Add it to env.ts(zod), just add a z.string to the object: SECRET_KEY: z.string()
+   * - Use Ed25519Keypair.fromSecretKey(ENV.SECRET_KEY) as signer
+   */
+
   // create a new SuiClient object pointing to the network you want to use
   const suiClient = new SuiClient({ url: getFullnodeUrl("devnet") });
 

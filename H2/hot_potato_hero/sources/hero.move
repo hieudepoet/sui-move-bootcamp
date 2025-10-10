@@ -58,7 +58,7 @@ public fun mint_hero(name: String, ctx: &mut TxContext): Hero {
         id: object::new(ctx),
         name,
         level: 1,
-        level_points: 0,
+        level_points: 91,
     }
 }
 
