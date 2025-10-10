@@ -26,6 +26,7 @@ test("Level Up - Devnet", async () => {
   });
 
   const tx = new Transaction();
+  tx.setGasBudget(1_000_000_000);
   
   let hero = tx.moveCall({
     target: `${ENV.PACKAGE_ID}::hero::mint_hero`,
