@@ -1,7 +1,11 @@
 module sui_primitives::sui_primitives;
-use std::string::String;
+#[test_only]
 use sui::dynamic_field;
+#[test_only]
 use sui::dynamic_object_field;
+#[test_only]
+use std::string::{String};
+#[test_only]
 use sui::test_scenario;
 
 #[test]
