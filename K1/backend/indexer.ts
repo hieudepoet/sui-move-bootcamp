@@ -10,6 +10,7 @@ const grpcClient = new SuiGrpcClient({
   baseUrl: getFullnodeUrl("testnet"),
 });
 
+// Construct the full event name for UserRegistered
 const FULL_EVENT_NAME =
   process.env.PACKAGE_ID +
   "::" +
@@ -45,7 +46,6 @@ const processCheckpoint = async (response: any): Promise<void> => {
   }
 };
 const main = async () => {
-  // Infinite loop to continuously listen for new checkpoints
   const stream = grpcClient.subscriptionService.subscribeCheckpoints({
     readMask: {
       paths: [
@@ -63,7 +63,7 @@ const main = async () => {
       try {
         await processCheckpoint(response);
       } catch (error) {
-        //   logger.error(error, "Error processing checkpoint");
+        console.log("Error while processing checkpoint:", error);
       }
     }
   } catch (error) {

@@ -1,5 +1,6 @@
 import { bcs } from "@mysten/sui/bcs";
 
+// Define the BCS structure for the UserRegistered event
 const USER_REGISTERED_EVENT_BCS = bcs.struct("UserRegistered", {
   owner: bcs.Address,
   name: bcs.string(),

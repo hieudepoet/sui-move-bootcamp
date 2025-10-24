@@ -57,5 +57,5 @@ describe("User Registration Tests", () => {
     // Log transaction details for debugging
     console.log("Transaction digest:", result.digest);
     console.log("Gas used:", result.effects?.gasUsed);
-  }); // 30 second timeout for blockchain interaction
+  });
 });
