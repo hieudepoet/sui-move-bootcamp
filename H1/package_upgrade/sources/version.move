@@ -10,7 +10,9 @@ public struct Version has key {
 }
 
 const EInvalidPackageVersion: u64 = 0;
+const EInvalidPublisher: u64 = 1;
 
+// Task: Update version to 2
 const VERSION: u64 = 2;
 
 fun init(ctx: &mut TxContext) {
@@ -22,11 +24,9 @@ public fun check_is_valid(self: &Version) {
     assert!(self.version == VERSION, EInvalidPackageVersion);
 }
 
-/// After upgrade, `migrate` function bumbs the `Version`'s object version, to
-/// match the latest `VERSION` constant.
-public fun migrate(self: &mut Version, pub: &Publisher) {
-    pub.from_package<Version>();
-    self.version = VERSION;
+public fun migrate(pub: &Publisher, version: &mut Version) {
+    assert!(pub.from_package<Version>(), EInvalidPublisher);
+    version.version = VERSION;
 }
 
 #[test_only]

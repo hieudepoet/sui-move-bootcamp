@@ -3,41 +3,32 @@ module package_upgrade::my_module {
     use sui::coin::Coin;
     use sui::sui::SUI;
 
-    const EInvalidVersion: u64 = 0;
+    const VERSION: u64 = 1;
 
-    const VERSION: u16 = 1;
-    
-    public struct ContractVersion has key {
-        id: UID,
-        version: u16,
-    }
+    const EDeprecated: u64 = 1;
 
     // @0xaaaaa::my_module::SharedBalancePool
     public struct SharedBalancePool has key {
         id: UID,
         balance: Balance<SUI>,
+        version: u64
     }
 
     fun init(ctx: &mut TxContext) {
         transfer::share_object(SharedBalancePool {
             id: object::new(ctx),
             balance: balance::zero(),
+            version: VERSION
         });
-        transfer::share_object(ContractVersion {
-            id: object::new(ctx),
-            version: VERSION,
-        });
-
     }
 
     // @aaaaaa::my_module::important_function
-    public fun important_function(pool: &mut SharedBalancePool, version: &ContractVersion): Coin<SUI> {
-        assert!(version.version == VERSION, EInvalidVersion);
+    public fun important_function(pool: &mut SharedBalancePool): Coin<SUI> {
+        assert!(pool.version == VERSION, EDeprecated);
         // Buggy code means the pool is exploitable
         // Buggy code means the pool is exploitable
         // Buggy code means the pool is exploitable
         // Buggy code means the pool is exploitable
-        let _pool = pool;
         abort(0)
     }
 }
@@ -48,33 +39,28 @@ module package_upgrade::same_my_module {
     use sui::coin::Coin;
     use sui::sui::SUI;
 
-    const EInvalidVersion: u64 = 0;
+    const VERSION: u64 = 2;
 
-    const VERSION: u16 = 2;
-
-    public struct ContractVersion has key {
-        id: UID,
-        version: u16,
-    }
+    const EDeprecated: u64 = 1;
 
     // @0xaaaaa::my_module::SharedBalancePool
     public struct SharedBalancePool has key {
         id: UID,
         balance: Balance<SUI>,
+        version: u64
     }
 
-    public fun migrate(version: &mut ContractVersion, /*_: &AdminCap*/) {
-        version.version = VERSION;
+    public fun migrate(pool: &mut SharedBalancePool) {
+        pool.version = VERSION;
     }
 
     // @bbbbbb::my_module::important_function
-    public fun important_function(pool: &mut SharedBalancePool, version: &ContractVersion): Coin<SUI> {
-        assert!(version.version == VERSION, EInvalidVersion);
+    public fun important_function(pool: &mut SharedBalancePool): Coin<SUI> {
+        assert!(pool.version == VERSION, EDeprecated);
         // Code without the bug
         // Code without the bug
         // Code without the bug
         // Code without the bug
-        let _pool = pool;
         abort(0)
     }
 }
