@@ -28,6 +28,7 @@ fun hero_mint_should_fail() {
     abort(EShouldHaveFailed)
 }
 
+// *** DONT SHOW: Dynamic Field Keys are to be removed after Istanbul bootcamp ***
 #[test]
 fun dfs_should_use_custom_keys() {
 

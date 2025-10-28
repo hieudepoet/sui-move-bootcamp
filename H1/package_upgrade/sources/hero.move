@@ -22,6 +22,7 @@ const EUseMintHeroV2Instead: u64 = 3;
 
 public struct HERO() has drop;
 
+// *** DONT SHOW: Dynamic Field Keys are to be removed after Istanbul bootcamp ***
 // sword, shield, power
 public struct SwordKey has copy, drop, store {}
 public struct ShieldKey has copy, drop, store {}
@@ -56,12 +57,14 @@ public fun mint_hero_v2(version: &Version, payment: Coin<SUI>, ctx: &mut TxConte
     assert!(payment.value() == HERO_PRICE, EInvalidPrice);
     transfer::public_transfer(payment, PAYMENT_RECEIVER);
 
+    // *** DONT SHOW: Dynamic Field Keys are to be removed after Istanbul bootcamp ***
     // Power IS a DYNAMIC FIELD (DF), not DYNAMIC OBJECT FIELD(DOF), because its value is a u64, not an Object.
     df::add(&mut hero.id, PowerKey{}, 0);
 
     hero
 }
 
+// *** DONT CHANGE: Dynamic Field Keys are to be removed after Istanbul bootcamp ***
 /// Hero can equip a single sword.
 /// Equiping a sword increases the `Hero`'s power by its attack.
 public fun equip_sword(self: &mut Hero, version: &Version, sword: Sword) {
@@ -80,6 +83,7 @@ public fun equip_sword(self: &mut Hero, version: &Version, sword: Sword) {
 
 }
 
+// *** DONT CHANGE: Dynamic Field Keys are to be removed after Istanbul bootcamp ***
 /// Hero can equip a single shield.
 /// Equiping a shield increases the `Hero`'s power by its defence.
 public fun equip_shield(self: &mut Hero, version: &Version, shield: Shield) {
@@ -104,11 +108,13 @@ public fun stamina(self: &Hero): u64 {
     self.stamina
 }
 
+// *** DONT SHOW: Dynamic Field Keys are to be removed after Istanbul bootcamp ***
 // Task: Add power getter
 public fun power(self: &Hero): u64 {
     *df::borrow(&self.id, PowerKey{})
 }
 
+// *** DONT CHANGE: Dynamic Field Keys are to be removed after Istanbul bootcamp ***
 /// Returns the sword the hero has equipped.
 /// Aborts if it does not exists
 public fun sword(self: &Hero): &Sword {
@@ -116,6 +122,7 @@ public fun sword(self: &Hero): &Sword {
     dof::borrow(&self.id, SwordKey{})
 }
 
+// *** DONT CHANGE: Dynamic Field Keys are to be removed after Istanbul bootcamp ***
 /// Returns the shield the hero has equipped.
 /// Aborts if it does not exists
 public fun shield(self: &Hero): &Shield {
