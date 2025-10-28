@@ -7,7 +7,7 @@ In this section, you will learn how to safely upgrade published Move packages on
 - The concept of package immutability in Sui and why upgrades are necessary for iterative development.
 - How to perform package upgrades while maintaining the benefits of immutable code.
 - The use of versioned shared objects to manage state and restrict access to only the latest package version.
-- Safe migration patterns, including the use of `AdminCap` and migration functions to transition users and objects to upgraded logic.
+- Safe migration patterns, including the use of `Publisher` and migration functions to transition users and objects to upgraded logic.
 - Best practices for maintaining compatibility and deprecating old functionality.
 
 By the end of this section, you will be able to design and implement upgradeable Move packages, ensuring your smart contracts remain secure, maintainable, and up-to-date as requirements evolve.
@@ -55,17 +55,7 @@ In `hero.move`, modify the hero creation to:
 - Replace free minting with a purchase system
 - Set the price to 5 SUI
 - Create a new `mint_hero_v2` function that accepts payment
-
-### 3. Add Type-Safe Equipment Keys
-In `hero.move`, implement:
-- New structs for sword and shield equipment keys
-- Update the equipment functions to use these type-safe keys instead of strings
-
-### 4. Add Hero Power
-In `hero.move`, add:
-- A `power` field to the `Hero` struct
-- Logic to increase power when equipping swords (by attack value) or shields (by defense value)
-
+- Deprecate the `mint_hero` method with an error code
 ## Useful Links
 
 - [Package Upgrades Documentation](https://docs.sui.io/concepts/sui-move-concepts/packages/upgrade)

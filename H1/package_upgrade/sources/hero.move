@@ -19,7 +19,6 @@ public struct Hero has key, store {
     id: UID,
     health: u64,
     stamina: u64,
-    // Task: Add power field
 }
 
 fun init(otw: HERO, ctx: &mut TxContext) {
@@ -42,26 +41,20 @@ public fun mint_hero(version: &Version, ctx: &mut TxContext): Hero {
 // }
 
 /// Hero can equip a single sword.
-/// Equiping a sword increases the `Hero`'s power by its attack.
 public fun equip_sword(self: &mut Hero, version: &Version, sword: Sword) {
     version.check_is_valid();
-    // Task: Use SwordKey instead of string
     if (df::exists_(&self.id, b"sword".to_string())) {
         abort(EAlreadyEquipedSword)
     };
-    // Task: Update power
     self.add_dof(b"sword".to_string(), sword)
 }
 
 /// Hero can equip a single shield.
-/// Equiping a shield increases the `Hero`'s power by its defence.
 public fun equip_shield(self: &mut Hero, version: &Version, shield: Shield) {
     version.check_is_valid();
-    // Task: Use ShieldKey instead of string
     if (df::exists_(&self.id, b"shield".to_string())) {
         abort(EAlreadyEquipedShield)
     };
-    // Task: Update power
     self.add_dof(b"shield".to_string(), shield)
 }
 
@@ -73,22 +66,15 @@ public fun stamina(self: &Hero): u64 {
     self.stamina
 }
 
-// Task: Add power getter
-// public fun power(self: &Hero): u64 {
-//     0
-// }
-
 /// Returns the sword the hero has equipped.
 /// Aborts if it does not exists
 public fun sword(self: &Hero): &Sword {
-    // Task: Use SwordKey instead of string
     dof::borrow(&self.id, b"sword")
 }
 
 /// Returns the shield the hero has equipped.
 /// Aborts if it does not exists
 public fun shield(self: &Hero): &Shield {
-    // Task: Use ShieldKey instead of string
     dof::borrow(&self.id, b"shield")
 }
 
