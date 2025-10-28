@@ -24,8 +24,8 @@ Module `blacksmith` involves the `Blacksmith` capability object which can create
 ### hero
 A `Hero` is a freely mintable NFT which can equip `Sword` and `Shield` under the dynamic field keys `"sword"` and `"shield"`.
 
-### admin
-Includes the `AdminCap` used to create `Blacksmith` capability objects.
+### version
+Includes the `Version` object and the constant `VERSION` used to enforce the usage of latest contract version methods.
 
 ### package_version
 Uses the [Versioned Shared Objects](https://docs.sui.io/concepts/sui-move-concepts/packages/upgrade#versioned-shared-objects) pattern to enable deprecation of functions defined in previous package version.
