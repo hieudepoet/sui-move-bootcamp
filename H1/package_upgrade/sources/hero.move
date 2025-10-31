@@ -22,12 +22,6 @@ const EUseMintHeroV2Instead: u64 = 3;
 
 public struct HERO() has drop;
 
-// *** DONT SHOW: Dynamic Field Keys are to be removed after Istanbul bootcamp ***
-// sword, shield, power
-public struct SwordKey has copy, drop, store {}
-public struct ShieldKey has copy, drop, store {}
-public struct PowerKey has copy, drop, store {}
-
 /// Hero NFT
 public struct Hero has key, store {
     id: UID,
@@ -57,47 +51,31 @@ public fun mint_hero_v2(version: &Version, payment: Coin<SUI>, ctx: &mut TxConte
     assert!(payment.value() == HERO_PRICE, EInvalidPrice);
     transfer::public_transfer(payment, PAYMENT_RECEIVER);
 
-    // *** DONT SHOW: Dynamic Field Keys are to be removed after Istanbul bootcamp ***
-    // Power IS a DYNAMIC FIELD (DF), not DYNAMIC OBJECT FIELD(DOF), because its value is a u64, not an Object.
-    df::add(&mut hero.id, PowerKey{}, 0);
-
     hero
 }
 
-// *** DONT CHANGE: Dynamic Field Keys are to be removed after Istanbul bootcamp ***
 /// Hero can equip a single sword.
 /// Equiping a sword increases the `Hero`'s power by its attack.
 public fun equip_sword(self: &mut Hero, version: &Version, sword: Sword) {
     version.check_is_valid();
-    
-    if (dof::exists_(&self.id, SwordKey{})) {
+
+    if (df::exists_(&self.id, b"sword".to_string())) {
         abort(EAlreadyEquipedSword)
     };
-    // or assert!(dof::exists_(&self.id, SwordKey{}), EAlreadyEquipedSword)
 
-    // The borrow and borrow_mut return &ref(REFERENCE &), to access the value, use the asterisk(*)
-    let mut hero_power = df::borrow_mut(&mut self.id, PowerKey{});
-    *hero_power = *hero_power + sword.attack();
-
-    dof::add(&mut self.id, SwordKey{}, sword);
-
+    self.add_dof(b"sword".to_string(), sword)
 }
 
-// *** DONT CHANGE: Dynamic Field Keys are to be removed after Istanbul bootcamp ***
 /// Hero can equip a single shield.
 /// Equiping a shield increases the `Hero`'s power by its defence.
 public fun equip_shield(self: &mut Hero, version: &Version, shield: Shield) {
     version.check_is_valid();
 
-    if(dof::exists_(&self.id, ShieldKey{})) {
+    if (df::exists_(&self.id, b"shield".to_string())) {
         abort(EAlreadyEquipedShield)
     };
-    // or assert!(dof::exists_(&self.id, ShieldKey{}), EAlreadyEquipedShield)
 
-    let mut hero_power = df::borrow_mut(&mut self.id, PowerKey{});
-    *hero_power = *hero_power + shield.defence();
-
-    dof::add(&mut self.id, ShieldKey{}, shield);
+    self.add_dof(b"shield".to_string(), shield)
 }
 
 public fun health(self: &Hero): u64 {
@@ -108,26 +86,16 @@ public fun stamina(self: &Hero): u64 {
     self.stamina
 }
 
-// *** DONT SHOW: Dynamic Field Keys are to be removed after Istanbul bootcamp ***
-// Task: Add power getter
-public fun power(self: &Hero): u64 {
-    *df::borrow(&self.id, PowerKey{})
-}
-
-// *** DONT CHANGE: Dynamic Field Keys are to be removed after Istanbul bootcamp ***
 /// Returns the sword the hero has equipped.
 /// Aborts if it does not exists
 public fun sword(self: &Hero): &Sword {
-    // Task: Use SwordKey instead of string
-    dof::borrow(&self.id, SwordKey{})
+    dof::borrow(&self.id, b"sword")
 }
 
-// *** DONT CHANGE: Dynamic Field Keys are to be removed after Istanbul bootcamp ***
 /// Returns the shield the hero has equipped.
 /// Aborts if it does not exists
 public fun shield(self: &Hero): &Shield {
-    // Task: Use ShieldKey instead of string
-    dof::borrow(&self.id, ShieldKey{})
+    dof::borrow(&self.id, b"shield")
 }
 
 /// Generic add dynamic object field to the hero.
