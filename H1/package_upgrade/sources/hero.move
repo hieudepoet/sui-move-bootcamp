@@ -34,7 +34,7 @@ fun init(otw: HERO, ctx: &mut TxContext) {
 }
 
 /// @deprecated: `mint_hero` is deprecated. Use `mint_hero_v2` instead.
-public fun mint_hero(version: &Version, ctx: &mut TxContext): Hero {
+public fun mint_hero(_version: &Version, _ctx: &mut TxContext): Hero {
     abort(EUseMintHeroV2Instead)
 }
 
@@ -42,7 +42,7 @@ public fun mint_hero(version: &Version, ctx: &mut TxContext): Hero {
 /// New hero will have 100 health and 10 stamina.
 public fun mint_hero_v2(version: &Version, payment: Coin<SUI>, ctx: &mut TxContext): Hero {
     version.check_is_valid();
-    let mut hero = Hero {
+    let hero = Hero {
         id: object::new(ctx),
         health: 100,
         stamina: 10
