@@ -7,8 +7,8 @@ public struct InsignificantWeapon has drop, store {
     power: u8,
 }
 
-public fun mint_hero(ctx: &mut TxContext): Hero {
-    let hero = Hero { id: object::new(ctx) };
+public fun mint_hero(name: String; ctx: &mut TxContext): Hero {
+    let hero = Hero { id: object::new(ctx), name: name };
     hero
 }
 

@@ -1,4 +1,5 @@
 module sui_primitives::sui_primitives;
+
 #[test_only]
 use sui::dynamic_field;
 #[test_only]

@@ -1,6 +1,8 @@
 module abilities_events_params::abilities_events_params;
+
 use std::string::String;
 use sui::event;
+use option::Option;
 
 //Error Codes
 const EMedalOfHonorNotAvailable: u64 = 111;
@@ -10,22 +12,70 @@ const EMedalOfHonorNotAvailable: u64 = 111;
 public struct Hero has key {
     id: UID, // required
     name: String,
+    mendal: vector<Mendal>,
+}
+
+public struct Medal has key, store {
+    id: UID,
+    name: String,
+}
+
+public struct HeroRegistry has key {
+    id: UID,
+    heroes: vector<ID>,
+}
+
+public struct MedalStorage has key {
+    id: UID,
+    medals: vector<Medal>,
+}
+
+public struct HeroMinted has copy, drop {
+    hero_id: UID,
+    owner: address,
 }
 
 // Module Initializer
 fun init(ctx: &mut TxContext) {}
 
-public fun mint_hero(name: String, ctx: &mut TxContext): Hero {
+public fun mint_hero(name: String, registry: &mut HeroRegistry, ctx: &mut TxContext): Hero {
     let freshHero = Hero {
         id: object::new(ctx), // creates a new UID
         name,
     };
+    registry.heroes.push_back(e: object::id(obj: &freshHero));
+
+    let minted: HeroMinted = HeroMinted {
+        hero: object::new(object: &freshHero),
+        owner: ctx.sender()
+    }
+    event::emit(event: minted);
     freshHero
 }
 
-public fun mint_and_keep_hero(name: String, ctx: &mut TxContext) {
-    let hero = mint_hero(name, ctx);
+public fun mint_and_keep_hero(name: String, registry: &mut HeroRegistry, ctx: &mut TxContext) {
+    let hero = mint_hero(name: name, registry: registry, ctx: ctx);
     transfer::transfer(hero, ctx.sender());
+}
+
+//private function
+fun award_medal(hero: &mut Hero, medalStorage: &mut MedalStorage, medalName: String) {
+    let medalOption: Option = get_medal(name: medalName, medalStorage: medalStorage);
+    assert!(medalOption.is_some(), EMedalOfHonorNotAvailable);
+    hero
+}
+
+fun get_medal(name: String, medalStorage: &mut MedalStorage): option::Option<Medal> {
+    let mut i: u64 = 0;
+    let length: u64 = medalStorage.medals.length();
+    while (i < length) {
+        if (medalStorage.medals[i].name == name) {
+            let exactractedMedal: Medal = vector::remove(v: &mut medalStorage.medals, i: i);
+            return option::some(e: extractedMedal)
+        };
+        i = i + 1;
+    }
+    option::none<Medal>()
 }
 
 /////// Tests ///////
